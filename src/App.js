@@ -1,24 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useEffect, useState } from "react";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Loading from "./components/Loading";
+import { saveLoginInfo } from "./services/api";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let bodyFormData = new FormData();
+    bodyFormData.append("load", true);
+    saveLoginInfo(bodyFormData)
+      .then((response) => {
+        if (response.status === 200 || response.status === 201) {
+          setIsLoading(false);
+        } else {
+          throw response;
+        }
+      })
+      .catch((error) => {
+        console.log("test", error);
+        setIsLoading(false);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      {isLoading ? (
+        <Loading cover="content" backdrop={true} />
+      ) : (
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      )}
+    </Fragment>
   );
 }
 
