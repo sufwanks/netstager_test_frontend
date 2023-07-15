@@ -13,7 +13,7 @@ const Footer = () => {
               <address className="text-dark fs-6">
                 Software Development Building 1,
                 <br />
-                UL Cyberpark Fifth Floor,
+                UL Cyberpark First Floor,
                 <br />
                 ULCCS LTD Special Economic Zone,
                 <br />
@@ -45,10 +45,9 @@ const Footer = () => {
               {" "}
               <h4 className="text-dark">Information</h4>
               <div className="footer-links d-flex flex-column">
-                <Link className="text-dark py-2 mb-1">Laptops</Link>
-                <Link className="text-dark py-2 mb-1">Headphones</Link>
-                <Link className="text-dark py-2 mb-1">Tablets</Link>
-                <Link className="text-dark py-2 mb-1">Watch</Link>
+                <Link className="text-dark py-2 mb-1">Web Development</Link>
+                <Link className="text-dark py-2 mb-1">UI/UX Design</Link>
+                <Link className="text-dark py-2 mb-1">Digital Marketing</Link>
               </div>
             </div>
           </div>
