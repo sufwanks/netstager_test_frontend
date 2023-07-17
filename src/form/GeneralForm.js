@@ -44,7 +44,6 @@ const GeneralForm = ({ setFirstName }) => {
     form
       .validateFields()
       .then((res) => {
-        console.log(res);
 
         let tempCheck = form.getFieldValue();
         let tempaddress = addressForm.getFieldValue();
@@ -56,14 +55,11 @@ const GeneralForm = ({ setFirstName }) => {
 
         let formValues = { ...tempCheck, ...newAdress };
 
-        console.log(formValues);
-        debugger;
         if (formValues) {
           var bodyFormData = new FormData();
           Object.keys(formValues).forEach((prop) => {
             bodyFormData.append(prop, formValues[prop]);
           });
-          debugger;
           saveLeadData(bodyFormData)
             .then((response) => {
               if (response.status === 200 || response.status === 201) {
@@ -77,7 +73,6 @@ const GeneralForm = ({ setFirstName }) => {
                 } else {
                   message.success(`Record has been added successfully`, 1.5);
                 }
-                console.log(response);
                 navigate("/final");
               } else {
                 throw response;
