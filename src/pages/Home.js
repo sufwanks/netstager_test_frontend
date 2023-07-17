@@ -1,10 +1,8 @@
-import { Card } from "antd";
 import React, { useState } from "react";
 import GeneralForm from "../form/GeneralForm";
 
 const Home = () => {
-  const [currentStep, setCurrentStep] = useState();
-  const [steps, setSteps] = useState();
+  const [firstName, setFirstName] = useState("");
 
   return (
     <div>
@@ -18,7 +16,15 @@ const Home = () => {
           <div className="col-12">
             <div className="container mb-5">
               <div className="text-center mb-5 mt-5">
-                <h2>Lorem Ipsum</h2>
+                {firstName.length != 0 ? (
+                  <h2 className="text-center name-text">
+                    Hi {firstName.toUpperCase()} Lorem Ipsum is simply dummy text of the
+                    printing and typesetting industry.
+                  </h2>
+                ) : (
+                  <h2>Lorem Ipsum</h2>
+                )}
+
                 <p className="mt-5 text-justify">
                   Lorem Ipsum has been the industry's standard dummy text ever
                   since the 1500s, when an unknown printer took a galley of type
@@ -28,7 +34,7 @@ const Home = () => {
                 </p>
               </div>
               <div>
-                <GeneralForm />
+                <GeneralForm setFirstName={setFirstName} />
               </div>
             </div>
           </div>

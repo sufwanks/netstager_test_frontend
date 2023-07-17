@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { AiFillYoutube, AiFillGithub, AiFillInstagram } from "react-icons/ai";
 
 const Footer = () => {
@@ -40,14 +39,17 @@ const Footer = () => {
                 </a>
               </div>
             </div>
-            <div className="col-3"></div>
-            <div className="col-3">
+            <div className="col-2"></div>
+            <div className="col-5">
               {" "}
               <h4 className="text-dark">Information</h4>
               <div className="footer-links d-flex flex-column">
-                <Link className="text-dark py-2 mb-1">Web Development</Link>
-                <Link className="text-dark py-2 mb-1">UI/UX Design</Link>
-                <Link className="text-dark py-2 mb-1">Digital Marketing</Link>
+                Lorem Ipsum is simply dummy text Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s, when an
+                unknown printer took a galley of type and scrambled it to make a
+                type specimen book. It has survived not only five centuries, but
+                also the leap into electronic typesetting, remaining essentially
+                unchanged.
               </div>
             </div>
           </div>

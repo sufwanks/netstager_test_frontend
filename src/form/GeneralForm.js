@@ -1,53 +1,67 @@
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Select,
-  message,
-} from "antd";
-import { useEffect, useRef, useState } from "react";
+import { Button, Card, Form, Input, Modal, Select, message } from "antd";
+import { useEffect, useState } from "react";
 import { months } from "../constants/Months";
 import { saveLeadData } from "../services/api";
-const { Option } = Select;
-const GeneralForm = () => {
+import { useNavigate } from "react-router-dom";
+
+const GeneralForm = ({ setFirstName }) => {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [addressForm] = Form.useForm();
   const [days, setDays] = useState([]);
-  const [month, setMonths] = useState(months);
   const [years, setYears] = useState([]);
   const [buttonStatus, setButtonStatus] = useState(0);
   const [showPage, setShowPage] = useState(true);
-  const [fieldValues, setFieldValues] = useState([]);
+
   const [addressRow, setAddressRow] = useState(1);
 
   useEffect(() => {
     let day = [];
     for (let index = 0; index <= 30; index++) {
-      day.push({ label: index + 1, value: index + 1 });
+      day.push({ label: `${index + 1}`, value: index + 1 });
     }
     setDays(day);
     let year = [];
     for (let index = 1900; index < new Date().getFullYear(); index++) {
-      year.push({ label: index + 1, value: index + 1 });
+      year.push({ label: `${index + 1}`, value: index + 1 });
     }
     setYears(year);
   }, []);
 
   const onFinish = () => {
+    let tempaddd = addressForm.getFieldsValue();
+    addressForm.setFieldsValue({
+      first_address: `${tempaddd?.line_one_first}/n
+  ${tempaddd?.line_two_first}/n
+  ${tempaddd?.line_three_first}/n`,
+      second_address: `${tempaddd?.line_one_sec}/n
+    ${tempaddd?.line_two_sec}/n
+    ${tempaddd?.line_three_sec}/n`,
+      third_address: `${tempaddd?.line_one_third}/n
+    ${tempaddd?.line_two_third}/n
+    ${tempaddd?.line_three_third}/n`,
+    });
     form
       .validateFields()
       .then((res) => {
         console.log(res);
 
         let tempCheck = form.getFieldValue();
-        console.log(tempCheck);
-        if (tempCheck) {
+        let tempaddress = addressForm.getFieldValue();
+        let newAdress = {
+          previous_address_one: tempaddress?.first_address,
+          previous_address_two: tempaddress?.second_address,
+          previous_address_three: tempaddress?.third_address,
+        };
+
+        let formValues = { ...tempCheck, ...newAdress };
+
+        console.log(formValues);
+        debugger;
+        if (formValues) {
           var bodyFormData = new FormData();
-          Object.keys(tempCheck).forEach((prop) => {
-            console.log(prop);
-            bodyFormData.append(prop, tempCheck[prop]);
+          Object.keys(formValues).forEach((prop) => {
+            bodyFormData.append(prop, formValues[prop]);
           });
           debugger;
           saveLeadData(bodyFormData)
@@ -63,8 +77,8 @@ const GeneralForm = () => {
                 } else {
                   message.success(`Record has been added successfully`, 1.5);
                 }
-                setButtonStatus(parseInt(4));
                 console.log(response);
+                navigate("/final");
               } else {
                 throw response;
               }
@@ -118,22 +132,13 @@ const GeneralForm = () => {
     );
   };
 
-  const FinalSection = () => {
-    return (
-      <div className="container-xxl">
-        <div className="row">
-          <div className="col-12">
-            <h2 className="final-msg">Thankyou...</h2>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const onHandleButton = (e) => {
     form
       .validateFields()
       .then((res) => {
+        let tempName = form.getFieldValue("first_name");
+        setFirstName(tempName);
+
         if (e.target.textContent == "Next") {
           setShowPage(false);
         } else if (e.target.textContent == "Submit") {
@@ -201,12 +206,8 @@ const GeneralForm = () => {
                                   showSearch
                                   placeholder="Day"
                                   optionFilterProp="children"
-                                  // onChange={onChange}
-                                  // onSearch={onSearch}
                                   filterOption={(input, option) =>
-                                    (option?.label ?? "")
-                                      .toLowerCase()
-                                      .includes(input.toLowerCase())
+                                    (option?.label).includes(input)
                                   }
                                   options={days}
                                 />
@@ -229,8 +230,6 @@ const GeneralForm = () => {
                                   placeholder="Month"
                                   name="Month"
                                   optionFilterProp="children"
-                                  // onChange={onChange}
-                                  // onSearch={onSearch}
                                   filterOption={(input, option) =>
                                     (option?.label ?? "")
                                       .toLowerCase()
@@ -256,12 +255,8 @@ const GeneralForm = () => {
                                   placeholder="Year"
                                   name="Year"
                                   optionFilterProp="children"
-                                  // onChange={onChange}
-                                  // onSearch={onSearch}
                                   filterOption={(input, option) =>
-                                    (option?.label ?? "")
-                                      .toLowerCase()
-                                      .includes(input.toLowerCase())
+                                    (option?.label ?? "").includes(input)
                                   }
                                   options={years}
                                 />
@@ -276,7 +271,7 @@ const GeneralForm = () => {
                   <>
                     <div className="mb-3">
                       <Form.Item
-                        name="email"
+                        name="email_id"
                         label="E-mail"
                         rules={[
                           {
@@ -294,7 +289,7 @@ const GeneralForm = () => {
                     </div>
                     <div className="mb-3">
                       <Form.Item
-                        name="phone"
+                        name="phone_number"
                         label="Phone Number"
                         rules={[
                           {
@@ -319,7 +314,6 @@ const GeneralForm = () => {
                     className="btn btn-warning next-btn"
                     onClick={onHandleButton}
                     value={showPage ? "Next" : "Submit"}
-                    // type="primary"
                   >
                     {showPage ? "Next" : "Submit"}
                   </Button>
@@ -343,19 +337,33 @@ const GeneralForm = () => {
       setAddressRow(addressRow - 1);
     }
   };
+
   const AddressForm = () => {
     return (
       <Card title="Enter Your Personal Details">
         <div className="container-xxl">
           <div className="row">
             <div className="col-12">
-              <Form form={form} layout="vertical" autoComplete="off">
-                {addressRow == 1 ? (
-                  <div className="mb-3">
-                    <Form.Item name="first_address">
+              <Form
+                form={addressForm}
+                name="address"
+                layout="vertical"
+                autoComplete="off"
+              >
+                <div className="mb-3">
+                  {addressRow >= 1 && (
+                    <Form.Item
+                      name="first_address"
+                      label="Previous Address 1"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your address",
+                        },
+                      ]}
+                    >
                       <Form.Item
-                        name="line_one"
-                        label="Previous Address 1"
+                        name="line_one_first"
                         rules={[
                           {
                             required: true,
@@ -366,7 +374,7 @@ const GeneralForm = () => {
                         <Input placeholder="Address line 1" className="mb-3" />
                       </Form.Item>
                       <Form.Item
-                        name="line_two"
+                        name="line_two_first"
                         rules={[
                           {
                             required: true,
@@ -376,17 +384,25 @@ const GeneralForm = () => {
                       >
                         <Input placeholder="Address line 2" className="mb-3" />
                       </Form.Item>
-                      <Form.Item name="line_three">
+                      <Form.Item name="line_three_first">
                         <Input placeholder="Address line 3" />
                       </Form.Item>
                     </Form.Item>
-                  </div>
-                ) : addressRow == 2 ? (
-                  <>
-                    <div className="mb-3">
+                  )}
+
+                  {addressRow >= 2 && (
+                    <Form.Item
+                      name="second_address"
+                      label="Previous Address 2"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your address",
+                        },
+                      ]}
+                    >
                       <Form.Item
-                        name="first_address"
-                        label="Previous Address 1"
+                        name="line_one_sec"
                         rules={[
                           {
                             required: true,
@@ -395,14 +411,37 @@ const GeneralForm = () => {
                         ]}
                       >
                         <Input placeholder="Address line 1" className="mb-3" />
+                      </Form.Item>
+                      <Form.Item
+                        name="line_two_sec"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your address",
+                          },
+                        ]}
+                      >
                         <Input placeholder="Address line 2" className="mb-3" />
+                      </Form.Item>
+                      <Form.Item name="line_three_sec">
                         <Input placeholder="Address line 3" />
                       </Form.Item>
-                    </div>
-                    <div className="mb-3">
+                    </Form.Item>
+                  )}
+
+                  {addressRow >= 3 && (
+                    <Form.Item
+                      name="third_address"
+                      label="Previous Address 3"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your address",
+                        },
+                      ]}
+                    >
                       <Form.Item
-                        name="second_address"
-                        label="Previous Address 2"
+                        name="line_one_third"
                         rules={[
                           {
                             required: true,
@@ -411,103 +450,24 @@ const GeneralForm = () => {
                         ]}
                       >
                         <Input placeholder="Address line 1" className="mb-3" />
+                      </Form.Item>
+                      <Form.Item
+                        name="line_two_third"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your address",
+                          },
+                        ]}
+                      >
                         <Input placeholder="Address line 2" className="mb-3" />
+                      </Form.Item>
+                      <Form.Item name="line_three_third">
                         <Input placeholder="Address line 3" />
                       </Form.Item>
-                    </div>
-                  </>
-                ) : (
-                  addressRow == 3 && (
-                    <>
-                      <div className="mb-3">
-                        <Form.Item
-                          name="first_address"
-                          label="Previous Address 1"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your address",
-                            },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Address line 1"
-                            className="mb-3"
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name="first_address"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your address",
-                            },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Address line 2"
-                            className="mb-3"
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name="first_address"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your address",
-                            },
-                          ]}
-                        >
-                          <Input placeholder="Address line 3" />
-                        </Form.Item>
-                      </div>
-                      <div className="mb-3">
-                        <Form.Item
-                          name="second_address"
-                          label="Previous Address 2"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your address",
-                            },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Address line 1"
-                            className="mb-3"
-                          />
-                          <Input
-                            placeholder="Address line 2"
-                            className="mb-3"
-                          />
-                          <Input placeholder="Address line 3" />
-                        </Form.Item>
-                      </div>
-                      <div className="mb-3">
-                        <Form.Item
-                          name="third_address"
-                          label="Previous Address 3"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter your address",
-                            },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Address line 1"
-                            className="mb-3"
-                          />
-                          <Input
-                            placeholder="Address line 2"
-                            className="mb-3"
-                          />
-                          <Input placeholder="Address line 3" />
-                        </Form.Item>
-                      </div>
-                    </>
-                  )
-                )}
+                    </Form.Item>
+                  )}
+                </div>
               </Form>
               <div className="row">
                 <div className="col-12 text-center">

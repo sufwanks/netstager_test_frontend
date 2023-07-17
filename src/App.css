@@ -39,7 +39,10 @@ a {
 
 .header-navbar {
   background-color: var(--color-ffffff);
-  /* border-bottom: 5px solid var(--color-3b4149); */
+  border-bottom: 1px solid var(--color-3b4149);
+}
+.name-text {
+  color: #0087cd;
 }
 
 .footer-bottom {
@@ -153,7 +156,7 @@ a {
   margin-top: 20px;
   height: auto;
 }
-.ant-input-number{
+.ant-input-number {
   display: block;
   width: 100%;
   height: calc(1.5em + 0.75rem + 2px);
